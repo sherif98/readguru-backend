@@ -1,6 +1,6 @@
 CREATE TABLE highlights (
     id INT GENERATED ALWAYS AS IDENTITY,
-    user_id INT NOT NULL,
+    user_id VARCHAR NOT NULL,
     title_id INT NOT NULL,
     highlight_text VARCHAR NOT NULL,
     last_reviewed_at TIMESTAMP,

@@ -1,6 +1,6 @@
 CREATE TABLE titles (
     id INT GENERATED ALWAYS AS IDENTITY,
-    user_id INT NOT NULL,
+    user_id VARCHAR NOT NULL,
     title_name VARCHAR NOT NULL,
     author VARCHAR NOT NULL,
     cover VARCHAR NOT NULL,

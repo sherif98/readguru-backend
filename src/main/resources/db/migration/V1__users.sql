@@ -1,5 +1,5 @@
 CREATE TABLE users (
-    id INT GENERATED ALWAYS AS IDENTITY,
+    id VARCHAR,
     name VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
     daily_highlights_review_count INT NOT NULL,

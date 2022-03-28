@@ -37,6 +37,9 @@ public class Title {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private String userId;
+
     @Column(name = "title_name")
     private String titleName;
 

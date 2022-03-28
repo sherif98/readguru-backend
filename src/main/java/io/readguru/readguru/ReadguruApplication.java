@@ -36,12 +36,13 @@ public class ReadguruApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		if (userRepository.findById(1).isPresent()) {
+		if (userRepository.findById("FKvF4zGBivXGAGlpoV8d7BJSVoz2").isPresent()) {
 			return;
 		}
 		User user = userRepository.save(User.builder()
+				.id("FKvF4zGBivXGAGlpoV8d7BJSVoz2")
 				.name("sherif")
-				.email("sherif@readguru.io")
+				.email("sherif@test.com")
 				.build());
 
 		Tag epicTag = tagRepository.save(Tag.builder().user(user).id("epic").numberOfHighlights(2).build());

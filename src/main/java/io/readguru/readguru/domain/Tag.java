@@ -39,6 +39,9 @@ public class Tag {
     @EqualsAndHashCode.Include
     private String id;
 
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private String userId;
+
     @Column(name = "number_of_highlights")
     @Builder.Default
     private int numberOfHighlights = 0;

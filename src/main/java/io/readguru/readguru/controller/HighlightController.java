@@ -2,17 +2,21 @@ package io.readguru.readguru.controller;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.readguru.readguru.config.Auth;
 import io.readguru.readguru.domain.Highlight;
 import io.readguru.readguru.domain.Tag;
 import io.readguru.readguru.domain.Title;
@@ -36,67 +40,67 @@ public class HighlightController {
     private TitleRepository titleRepository;
 
     @PostMapping("/title/{titleId}/highlight")
-    public Highlight addHighlight(@PathVariable int titleId, @RequestBody AddHighlightRequest addHighlightRequest) {
+    public Highlight addHighlight(@PathVariable int titleId, @RequestBody AddHighlightRequest addHighlightRequest,
+            @AuthenticationPrincipal Jwt jwt) {
         // TODO (increase title highlights count)
 
-        Title title = titleRepository.findById(titleId).orElseThrow(IllegalArgumentException::new);
+        Title title = titleRepository.findByIdAndUserId(titleId, Auth.currentUserId(jwt))
+                .orElseThrow(IllegalArgumentException::new);
         title.setNumberOfHighlights(title.getNumberOfHighlights() + 1);
         titleRepository.save(title);
 
         return highlightRepository.save(Highlight.builder()
                 .title(title)
-                .user(User.builder().id(1).build())
+                .user(User.builder().id(Auth.currentUserId(jwt)).build())
                 .highlightText(addHighlightRequest.getHighlightText())
                 .build());
     }
 
     @GetMapping("title/{titleId}/highlight")
-    public List<Highlight> getTitleHighlights(@PathVariable int titleId) {
-        return highlightRepository.findByTitleId(titleId);
+    public List<Highlight> getTitleHighlights(@PathVariable int titleId, @AuthenticationPrincipal Jwt jwt) {
+        return highlightRepository.findByTitleIdAndUserId(titleId, Auth.currentUserId(jwt));
     }
 
     @GetMapping("/highlight")
     public List<Highlight> getAllHighlights(
-            @RequestParam(name = "titleq", required = false, defaultValue = "") String titleQuery,
             @RequestParam(name = "tagq", required = false, defaultValue = "") String tagQuery,
-            @RequestHeader("Authorization") String token) {
-        System.out.println(token);
-        if (tagQuery.equals("") && titleQuery.equals("")) {
-            return highlightRepository.findAll();
+            @AuthenticationPrincipal Jwt jwt) {
+        if (tagQuery == null || tagQuery.equals("")) {
+            return highlightRepository.findByUserId(Auth.currentUserId(jwt));
         }
-        if (!tagQuery.equals("")) {
-            Tag tag = tagRepository.findById(tagQuery).orElseThrow(() -> new IllegalArgumentException());
-            return tag.getHighlights().stream().toList();
-        }
-        return highlightRepository.findAll(); // TODO(fetch highlights for a given title)
+        Tag tag = tagRepository.findByIdAndUserId(tagQuery, Auth.currentUserId(jwt))
+                .orElseThrow(() -> new IllegalArgumentException());
+        return tag.getHighlights().stream().toList();
     }
 
     @DeleteMapping("/highlight/{highlightId}")
-    public void removeHighlight(@PathVariable int highlightId) {
-        highlightRepository.deleteById(highlightId);
+    @Transactional
+    public void removeHighlight(@PathVariable int highlightId, @AuthenticationPrincipal Jwt jwt) {
+        highlightRepository.deleteByIdAndUserId(highlightId, Auth.currentUserId(jwt));
     }
 
     @PatchMapping("/highlight/{highlightId}/favorite")
-    public void toggleFavorite(@PathVariable int highlightId) {
-        Highlight highlight = highlightRepository.findById(highlightId)
+    public void toggleFavorite(@PathVariable int highlightId, @AuthenticationPrincipal Jwt jwt) {
+        Highlight highlight = highlightRepository.findByIdAndUserId(highlightId, Auth.currentUserId(jwt))
                 .orElseThrow(() -> new IllegalArgumentException());
         highlight.setFavorite(!highlight.isFavorite());
         highlightRepository.save(highlight);
     }
 
     @PostMapping("/highlight/{highlightId}/tag")
-    public Highlight tagHighlight(@PathVariable int highlightId, @RequestBody TagHighlightRequest tagHighlightRequest) {
-        Highlight highlight = highlightRepository.findById(highlightId)
+    public Highlight tagHighlight(@PathVariable int highlightId, @RequestBody TagHighlightRequest tagHighlightRequest,
+            @AuthenticationPrincipal Jwt jwt) {
+        Highlight highlight = highlightRepository.findByIdAndUserId(highlightId, Auth.currentUserId(jwt))
                 .orElseThrow(() -> new IllegalArgumentException());
 
         if (highlight.getTags().contains(Tag.builder().id(tagHighlightRequest.getTag()).build())) {
             return highlight;
         }
 
-        Tag tag = tagRepository.findById(tagHighlightRequest.getTag())
+        Tag tag = tagRepository.findByIdAndUserId(tagHighlightRequest.getTag(), Auth.currentUserId(jwt))
                 .orElseGet(() -> Tag.builder()
                         .id(tagHighlightRequest.getTag())
-                        .user(User.builder().id(1).build())
+                        .user(User.builder().id(Auth.currentUserId(jwt)).build())
                         .build());
 
         highlight.getTags().add(tag);
@@ -108,18 +112,18 @@ public class HighlightController {
 
     @DeleteMapping("/highlight/{highlightId}/tag")
     public Highlight unTagHighlight(@PathVariable int highlightId,
-            @RequestBody TagHighlightRequest tagHighlightRequest) {
-        Highlight highlight = highlightRepository.findById(highlightId)
+            @RequestBody TagHighlightRequest tagHighlightRequest, @AuthenticationPrincipal Jwt jwt) {
+        Highlight highlight = highlightRepository.findByIdAndUserId(highlightId, Auth.currentUserId(jwt))
                 .orElseThrow(() -> new IllegalArgumentException());
 
         if (!highlight.getTags().contains(Tag.builder().id(tagHighlightRequest.getTag()).build())) {
             return highlight;
         }
 
-        Tag tag = tagRepository.findById(tagHighlightRequest.getTag())
+        Tag tag = tagRepository.findByIdAndUserId(tagHighlightRequest.getTag(), Auth.currentUserId(jwt))
                 .orElseGet(() -> Tag.builder()
                         .id(tagHighlightRequest.getTag())
-                        .user(User.builder().id(1).build())
+                        .user(User.builder().id(Auth.currentUserId(jwt)).build())
                         .build());
 
         highlight.getTags().remove(tag);

@@ -43,6 +43,9 @@ public class Highlight {
     @Column(name = "title_id", insertable = false, updatable = false)
     private int titleId;
 
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private String userId;
+
     @Column(name = "highlight_text")
     private String highlightText;
 

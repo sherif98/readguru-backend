@@ -1,6 +1,6 @@
 CREATE TABLE tags (
     id VARCHAR,
-    user_id INT NOT NULL,
+    user_id VARCHAR NOT NULL,
     number_of_highlights INT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
