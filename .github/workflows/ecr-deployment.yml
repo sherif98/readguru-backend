@@ -9,7 +9,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: 189758831807.dkr.ecr.us-east-1.amazonaws.com/readguru
+  ECR_REPOSITORY: readguru
 
 jobs:
   build:
