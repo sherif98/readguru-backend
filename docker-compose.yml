@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  readguru-backend:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://readguru-db:5432/readguru_local
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=12345678
+    links:
+      - postgres
+  readguru-db:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=readguru_local
