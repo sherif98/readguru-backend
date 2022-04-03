@@ -18,6 +18,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,16 +30,15 @@ import lombok.ToString;
 @Setter
 @Builder
 @ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity(name = "titles")
 @Table(name = "titles")
 public class Title {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int id;
-
-    @Column(name = "user_id", insertable = false, updatable = false)
-    private String userId;
 
     @Column(name = "title_name")
     private String titleName;

@@ -22,6 +22,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,18 +34,15 @@ import lombok.ToString;
 @Setter
 @Builder
 @ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity(name = "highlights")
 @Table(name = "highlights")
 public class Highlight {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int id;
-
-    @Column(name = "title_id", insertable = false, updatable = false)
-    private int titleId;
-
-    @Column(name = "user_id", insertable = false, updatable = false)
-    private String userId;
 
     @Column(name = "highlight_text")
     private String highlightText;
@@ -67,8 +65,7 @@ public class Highlight {
     @JsonBackReference
     private User user;
 
-    @ManyToOne
-    // @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
     private Title title;
 
     @ManyToMany

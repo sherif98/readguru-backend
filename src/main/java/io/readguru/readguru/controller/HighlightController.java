@@ -1,6 +1,6 @@
 package io.readguru.readguru.controller;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -42,6 +42,7 @@ public class HighlightController {
     @PostMapping("/title/{titleId}/highlight")
     public Highlight addHighlight(@PathVariable int titleId, @RequestBody AddHighlightRequest addHighlightRequest,
             @AuthenticationPrincipal Jwt jwt) {
+
         // TODO (increase title highlights count)
 
         Title title = titleRepository.findByIdAndUserId(titleId, Auth.currentUserId(jwt))
@@ -57,12 +58,12 @@ public class HighlightController {
     }
 
     @GetMapping("title/{titleId}/highlight")
-    public List<Highlight> getTitleHighlights(@PathVariable int titleId, @AuthenticationPrincipal Jwt jwt) {
+    public Set<Highlight> getTitleHighlights(@PathVariable int titleId, @AuthenticationPrincipal Jwt jwt) {
         return highlightRepository.findByTitleIdAndUserId(titleId, Auth.currentUserId(jwt));
     }
 
     @GetMapping("/highlight")
-    public List<Highlight> getAllHighlights(
+    public Set<Highlight> getAllHighlights(
             @RequestParam(name = "tagq", required = false, defaultValue = "") String tagQuery,
             @AuthenticationPrincipal Jwt jwt) {
         if (tagQuery == null || tagQuery.equals("")) {
@@ -70,7 +71,7 @@ public class HighlightController {
         }
         Tag tag = tagRepository.findByIdAndUserId(tagQuery, Auth.currentUserId(jwt))
                 .orElseThrow(() -> new IllegalArgumentException());
-        return tag.getHighlights().stream().toList();
+        return tag.getHighlights();
     }
 
     @DeleteMapping("/highlight/{highlightId}")

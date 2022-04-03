@@ -1,6 +1,8 @@
 package io.readguru.readguru.controller;
 
-import java.util.List;
+import java.util.Set;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,12 +23,12 @@ public class TagController {
     private TagRepository tagRepository;
 
     @GetMapping("/tag")
-    public List<Tag> listTags(@AuthenticationPrincipal Jwt jwt) {
+    public Set<Tag> listTags(@AuthenticationPrincipal Jwt jwt) {
         return tagRepository.findByUserId(Auth.currentUserId(jwt));
     }
 
     @DeleteMapping("/tag/{tagId}")
-    // TODO tagged highlights many to many not removed
+    @Transactional
     public void removeTag(@PathVariable String tagId, @AuthenticationPrincipal Jwt jwt) {
         tagRepository.deleteByIdAndUserId(tagId, Auth.currentUserId(jwt));
     }

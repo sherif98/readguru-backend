@@ -1,9 +1,11 @@
 package io.readguru.readguru.repository;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import io.readguru.readguru.domain.Title;
@@ -11,11 +13,14 @@ import io.readguru.readguru.domain.Title;
 @Repository
 public interface TitleRepository extends JpaRepository<Title, Integer> {
 
-    // @Query(value = "SELECT * FROM titles WHERE user_id = ?1", nativeQuery = true)
-    List<Title> findByUserId(String userId);
+    @Query(value = "SELECT t FROM titles t WHERE t.user.id = :userId")
+    Set<Title> findByUserId(String userId);
 
+    @Query(value = "SELECT t FROM titles t WHERE t.id = :id AND t.user.id = :userId")
     Optional<Title> findByIdAndUserId(int id, String userId);
 
+    @Query(value = "DELETE FROM titles t WHERE t.id = :id AND t.user.id = :userId")
+    @Modifying
     void deleteByIdAndUserId(int id, String userId);
 
 }

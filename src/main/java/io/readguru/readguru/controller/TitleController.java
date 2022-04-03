@@ -1,6 +1,8 @@
 package io.readguru.readguru.controller;
 
-import java.util.List;
+import java.util.Set;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,15 +38,17 @@ public class TitleController {
 
     @GetMapping("/title/{titleId}")
     public Title getTitle(@PathVariable int titleId, @AuthenticationPrincipal Jwt jwt) {
-        return titleRepository.findByIdAndUserId(titleId, Auth.currentUserId(jwt)).get();
+        return titleRepository.findByIdAndUserId(titleId, Auth.currentUserId(jwt))
+                .orElseThrow(() -> new IllegalArgumentException());
     }
 
     @GetMapping("/title")
-    public List<Title> listTitles(@AuthenticationPrincipal Jwt jwt) {
+    public Set<Title> listTitles(@AuthenticationPrincipal Jwt jwt) {
         return titleRepository.findByUserId(Auth.currentUserId(jwt));
     }
 
     @DeleteMapping("/title/{titleId}")
+    @Transactional
     public void removeTitle(@PathVariable int titleId, @AuthenticationPrincipal Jwt jwt) {
         titleRepository.deleteByIdAndUserId(titleId, Auth.currentUserId(jwt));
     }
