@@ -40,11 +40,9 @@ public class HighlightController {
     private TitleRepository titleRepository;
 
     @PostMapping("/title/{titleId}/highlight")
+    @Transactional
     public Highlight addHighlight(@PathVariable int titleId, @RequestBody AddHighlightRequest addHighlightRequest,
             @AuthenticationPrincipal Jwt jwt) {
-
-        // TODO (increase title highlights count)
-
         Title title = titleRepository.findByIdAndUserId(titleId, Auth.currentUserId(jwt))
                 .orElseThrow(IllegalArgumentException::new);
         title.setNumberOfHighlights(title.getNumberOfHighlights() + 1);
@@ -77,7 +75,14 @@ public class HighlightController {
     @DeleteMapping("/highlight/{highlightId}")
     @Transactional
     public void removeHighlight(@PathVariable int highlightId, @AuthenticationPrincipal Jwt jwt) {
+        Highlight highlight = highlightRepository.findByIdAndUserId(highlightId, Auth.currentUserId(jwt))
+                .orElseThrow(IllegalArgumentException::new);
         highlightRepository.deleteByIdAndUserId(highlightId, Auth.currentUserId(jwt));
+
+        Title title = titleRepository.findByIdAndUserId(highlight.getTitle().getId(), Auth.currentUserId(jwt))
+                .orElseThrow(IllegalArgumentException::new);
+        title.setNumberOfHighlights(title.getNumberOfHighlights() - 1);
+        titleRepository.save(title);
     }
 
     @PatchMapping("/highlight/{highlightId}/favorite")
