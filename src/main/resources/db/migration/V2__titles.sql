@@ -8,5 +8,5 @@ CREATE TABLE titles (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT titles_fk_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );

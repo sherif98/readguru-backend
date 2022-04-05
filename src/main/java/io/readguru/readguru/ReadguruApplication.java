@@ -1,12 +1,17 @@
 package io.readguru.readguru;
 
 import java.util.Set;
+import java.util.TimeZone;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import io.readguru.readguru.domain.Highlight;
 import io.readguru.readguru.domain.Tag;
@@ -18,7 +23,21 @@ import io.readguru.readguru.repository.TitleRepository;
 import io.readguru.readguru.repository.UserRepository;
 
 @SpringBootApplication
-public class ReadguruApplication implements ApplicationRunner {
+public class ReadguruApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(ReadguruApplication.class, args);
+	}
+
+	@PostConstruct
+	public void init() {
+		// Setting Spring Boot SetTimeZone
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+	}
+}
+
+@Profile("!integrationtest")
+@Component
+class ApplicationRunnerTaskExecutor implements ApplicationRunner {
 
 	@Autowired
 	private UserRepository userRepository;
@@ -29,10 +48,6 @@ public class ReadguruApplication implements ApplicationRunner {
 
 	@Autowired
 	private TagRepository tagRepository;
-
-	public static void main(String[] args) {
-		SpringApplication.run(ReadguruApplication.class, args);
-	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -66,5 +81,4 @@ public class ReadguruApplication implements ApplicationRunner {
 				.highlightText("The idle mind is the devil's workshop").build());
 
 	}
-
 }
