@@ -67,9 +67,9 @@ class UserControllerIntegrationTest {
 		assertThat(user.get().getEmail()).isEqualTo(USER_EMAIL);
 		assertThat(user.get().getName()).isEqualTo(USER_EMAIL);
 		assertThat(user.get().getDailyHighlightReviewCount()).isEqualTo(User.DEFAULT_DAILY_HIGHLIGHT_REVIEW_COUNT);
-		assertThat(user.get().getCreatedAt()).isCloseToUtcNow(within(1, ChronoUnit.SECONDS));
-		assertThat(user.get().getUpdatedAt()).isCloseToUtcNow(within(1, ChronoUnit.SECONDS));
-		assertThat(user.get().getHighlightsReviewTime()).isCloseToUtcNow(within(1, ChronoUnit.SECONDS));
+		assertThat(user.get().getCreatedAt()).isCloseToUtcNow(within(1, ChronoUnit.MINUTES));
+		assertThat(user.get().getUpdatedAt()).isCloseToUtcNow(within(1, ChronoUnit.MINUTES));
+		assertThat(user.get().getHighlightsReviewTime()).isCloseToUtcNow(within(1, ChronoUnit.MINUTES));
 	}
 
 	@Test
