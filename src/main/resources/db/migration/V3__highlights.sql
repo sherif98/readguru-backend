@@ -7,6 +7,6 @@ CREATE TABLE highlights (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_title FOREIGN KEY(title_id) REFERENCES titles(id) ON DELETE CASCADE,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT highlights_fk_title FOREIGN KEY(title_id) REFERENCES titles(id) ON DELETE CASCADE,
+    CONSTRAINT highlights_fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

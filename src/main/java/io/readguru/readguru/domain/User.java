@@ -16,16 +16,20 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity(name = "users")
 @Table(name = "users")
 public class User {
+
+    public static final int DEFAULT_DAILY_HIGHLIGHT_REVIEW_COUNT = 4;
 
     @Id
     @EqualsAndHashCode.Include
@@ -39,7 +43,7 @@ public class User {
 
     @Column(name = "daily_highlights_review_count")
     @Builder.Default
-    private int dailyHighlightReviewCount = 4;
+    private int dailyHighlightReviewCount = DEFAULT_DAILY_HIGHLIGHT_REVIEW_COUNT;
 
     @Column(name = "highlights_review_time")
     @CreationTimestamp
