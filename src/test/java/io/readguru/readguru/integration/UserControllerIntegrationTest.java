@@ -6,14 +6,12 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -48,10 +46,12 @@ class UserControllerIntegrationTest {
 		userRepository.deleteAll();
 	}
 
-	@BeforeEach
-	public void setup() {
-		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));
-	}
+	// @BeforeEach
+	// public void setup() {
+	// objectMapper = objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd
+	// hh:mm"));
+	// // objectMapper = objectMapper.;
+	// }
 
 	@Test
 	void registerNewUser_onlyOneUserIsCreated() throws Exception {
@@ -87,9 +87,8 @@ class UserControllerIntegrationTest {
 				.andReturn();
 
 		User expectedUser = userRepository.findById(USER_ID).get();
-		String actualResponseBody = mvcResult.getResponse().getContentAsString();
-
-		assertThat(actualResponseBody).isEqualTo(objectMapper.writeValueAsString(expectedUser));
+		User user = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), User.class);
+		assertThat(user).isEqualTo(expectedUser);
 	}
 
 	@Test
@@ -112,8 +111,7 @@ class UserControllerIntegrationTest {
 				.andExpect(status().isOk())
 				.andReturn();
 
-		String actualResponseBody = mvcResult.getResponse().getContentAsString();
-
-		assertThat(actualResponseBody).isEqualTo(objectMapper.writeValueAsString(existingUser));
+		User user = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), User.class);
+		assertThat(user).isEqualTo(existingUser);
 	}
 }
