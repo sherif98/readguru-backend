@@ -52,7 +52,7 @@ public class Tag {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonBackReference(value = "tags_user")
     private User user;
 
     @ManyToMany(mappedBy = "tags")
