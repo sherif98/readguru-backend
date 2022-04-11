@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,8 +30,13 @@ public class TagController {
 
     @DeleteMapping("/tag/{tagId}")
     @Transactional
-    public void removeTag(@PathVariable String tagId, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<Void> removeTag(@PathVariable String tagId, @AuthenticationPrincipal Jwt jwt) {
+        System.out.println("sherifeid:" + tagId);
+        if (!tagRepository.findByIdAndUserId(tagId, Auth.currentUserId(jwt)).isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
         tagRepository.deleteByIdAndUserId(tagId, Auth.currentUserId(jwt));
+        return ResponseEntity.ok().build();
     }
 
 }
